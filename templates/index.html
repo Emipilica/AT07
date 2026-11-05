@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cadastro de Municípios</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <header>
+        <h1>Cadastro de Municípios</h1>
+        <p>Região Nordeste — Brasil</p>
+    </header>
+
+    <main>
+
+        <section class="informacoes">
+            <h2>Municípios cadastrados</h2>
+
+            <p>
+                Consulte os municípios da região Nordeste,
+                filtre por estado e visualize suas informações.
+            </p>
+        </section>
+
+        <section class="filtro">
+
+            <label for="uf">Filtrar por estado:</label>
+
+            <select id="uf">
+                <option value="">Todos os estados</option>
+                <option value="AL">Alagoas</option>
+                <option value="BA">Bahia</option>
+                <option value="CE">Ceará</option>
+                <option value="MA">Maranhão</option>
+                <option value="PB">Paraíba</option>
+                <option value="PE">Pernambuco</option>
+                <option value="PI">Piauí</option>
+                <option value="RN">Rio Grande do Norte</option>
+                <option value="SE">Sergipe</option>
+            </select>
+
+            <button onclick="listarMunicipios()">
+                Filtrar
+            </button>
+
+        </section>
+
+        <section class="tabela">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Município</th>
+                        <th>Estado</th>
+                        <th>UF</th>
+                        <th>Capital</th>
+                        <th>População</th>
+                    </tr>
+                </thead>
+
+                <tbody id="listaMunicipios">
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Projeto Flask — Cadastro de Municípios</p>
+    </footer>
+
+    <script>
+
+        // Função para listar os municípios
+        async function listarMunicipios() {
+
+            const uf = document.getElementById("uf").value;
+
+            let url = "/municipios";
+
+            // Se houver estado selecionado, adiciona o filtro
+            if (uf !== "") {
+                url += "?uf=" + encodeURIComponent(uf);
+            }
+
+            try {
+
+                const resposta = await fetch(url);
+
+                const municipios = await resposta.json();
+
+                const tabela = document.getElementById(
+                    "listaMunicipios"
+                );
+
+                // Limpa os dados anteriores
+                tabela.innerHTML = "";
+
+                // Percorre os municípios recebidos
+                for (const [nome, dados] of Object.entries(municipios)) {
+
+                    const linha = document.createElement("tr");
+
+                    linha.innerHTML = `
+                        <td>${nome}</td>
+                        <td>${dados.estado}</td>
+                        <td>${dados.sigla_uf}</td>
+                        <td>${dados.capital ? "Sim" : "Não"}</td>
+                        <td>${dados.populacao_estimada.toLocaleString("pt-BR")}</td>
+                    `;
+
+                    tabela.appendChild(linha);
+                }
+
+            } catch (erro) {
+
+                alert("Erro ao carregar os municípios.");
+
+                console.error(erro);
+
+            }
+
+        }
+
+        // Carrega todos os municípios ao abrir a página
+        window.onload = listarMunicipios;
+
+    </script>
+
+</body>
+
+</html>
