@@ -1,174 +1,116 @@
 
-/* ==========================================
-   CONFIGURAÇÕES GERAIS
-========================================== */
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    background-color: #f2f5f8;
-    color: #333;
+    background-color: #eef2f3;
+    font-family: Arial, sans-serif;
+    color: #263238;
 }
 
-
-/* ==========================================
-   CABEÇALHO
-========================================== */
-
-header {
-    background-color: #173b57;
+.cabecalho {
+    background: linear-gradient(120deg, #123c4a, #197278);
     color: white;
+    padding: 35px 20px 55px;
     text-align: center;
-    padding: 30px 20px;
+    border-radius: 0 0 25px 25px;
 }
 
-header h1 {
-    margin-bottom: 10px;
+.cabecalho h1 {
     font-size: 30px;
-}
-
-header p {
-    font-size: 16px;
-}
-
-
-/* ==========================================
-   CONTEÚDO PRINCIPAL
-========================================== */
-
-main {
-    max-width: 1100px;
-    margin: 30px auto;
-    padding: 20px;
-}
-
-.informacoes {
-    background-color: white;
-    padding: 25px;
-    border-radius: 8px;
-    margin-bottom: 25px;
-}
-
-.informacoes h2 {
-    color: #173b57;
-    margin-bottom: 15px;
-}
-
-.informacoes p {
-    line-height: 1.6;
-}
-
-
-/* ==========================================
-   FILTRO
-========================================== */
-
-.filtro {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
-    margin-bottom: 25px;
-}
-
-.filtro label {
     font-weight: bold;
 }
 
-select {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 15px;
+.informacoes {
+    margin-top: -30px;
 }
 
-button {
-    background-color: #173b57;
-    color: white;
+.info-card {
+    background: white;
+    padding: 17px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+    height: 100%;
+}
+
+.info-card strong {
+    display: block;
+    color: #197278;
+    font-size: 21px;
+}
+
+.painel {
+    background: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 15px;
-    transition: background-color 0.3s;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    overflow: hidden;
 }
 
-button:hover {
-    background-color: #285b7e;
+.painel-titulo {
+    background: #dcebea;
+    padding: 15px;
+    font-size: 19px;
+    font-weight: bold;
+    color: #164e56;
 }
 
+.painel-corpo {
+    padding: 18px;
+}
 
-/* ==========================================
-   TABELA
-========================================== */
+.form-control {
+    border-radius: 7px;
+}
+
+.form-control:focus {
+    border-color: #197278;
+    box-shadow: 0 0 0 0.2rem rgba(25,114,120,0.15);
+}
+
+.btn-salvar {
+    background-color: #198754;
+    color: white;
+}
+
+.btn-salvar:hover {
+    background-color: #146c43;
+    color: white;
+}
+
+.btn-editar {
+    background-color: #168aad;
+    color: white;
+}
+
+.btn-excluir {
+    background-color: #dc3545;
+    color: white;
+}
 
 .tabela {
-    background-color: white;
-    border-radius: 8px;
-    overflow-x: auto;
+    font-size: 14px;
+    vertical-align: middle;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
+.tabela thead {
+    background-color: #e6eeee;
 }
 
-thead {
-    background-color: #173b57;
-    color: white;
+.tabela tbody tr:hover {
+    background-color: #f0f8f8;
 }
 
-th,
-td {
-    padding: 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-tbody tr:hover {
-    background-color: #eef4f8;
-}
-
-
-/* ==========================================
-   RODAPÉ
-========================================== */
-
-footer {
-    background-color: #173b57;
-    color: white;
+.rodape {
     text-align: center;
+    color: #647477;
+    margin-top: 30px;
     padding: 20px;
-    margin-top: 40px;
+    border-top: 1px solid #d5dddd;
 }
 
+.capital-sim {
+    color: #198754;
+    font-weight: bold;
+}
 
-/* ==========================================
-   RESPONSIVIDADE
-========================================== */
-
-@media (max-width: 600px) {
-
-    header h1 {
-        font-size: 24px;
-    }
-
-    main {
-        padding: 10px;
-    }
-
-    .filtro {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    button {
-        width: 100%;
-    }
-
+.capital-nao {
+    color: #777;
 }

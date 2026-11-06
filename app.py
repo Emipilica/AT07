@@ -1,10 +1,12 @@
 
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, render_template, request, jsonify, send_file
+from io import BytesIO
+import json
 
 app = Flask(__name__)
 
 # =====================================================
-# BASE DE DADOS EM MEMÓRIA
+# BASE DE DADOS
 # =====================================================
 
 municipios_nordeste_dataset = {
@@ -17,7 +19,7 @@ municipios_nordeste_dataset = {
 
     "municipios": {
 
-        # ---------------- CEARÁ ----------------
+        # CEARÁ
 
         "Fortaleza": {
             "id_ibge": 2304400,
@@ -27,12 +29,20 @@ municipios_nordeste_dataset = {
             "populacao_estimada": 2582360
         },
 
+        "Caucaia": {
+            "id_ibge": 2303709,
+            "estado": "Ceará",
+            "sigla_uf": "CE",
+            "capital": False,
+            "populacao_estimada": 375730
+        },
+
         "Juazeiro do Norte": {
             "id_ibge": 2307304,
             "estado": "Ceará",
             "sigla_uf": "CE",
             "capital": False,
-            "populacao_estimada": 286120
+            "populacao_estimada": 303004
         },
 
         "Sobral": {
@@ -40,34 +50,10 @@ municipios_nordeste_dataset = {
             "estado": "Ceará",
             "sigla_uf": "CE",
             "capital": False,
-            "populacao_estimada": 203023
+            "populacao_estimada": 215286
         },
 
-        "Crato": {
-            "id_ibge": 2304202,
-            "estado": "Ceará",
-            "sigla_uf": "CE",
-            "capital": False,
-            "populacao_estimada": 131050
-        },
-
-        "Itapipoca": {
-            "id_ibge": 2306405,
-            "estado": "Ceará",
-            "sigla_uf": "CE",
-            "capital": False,
-            "populacao_estimada": 131687
-        },
-
-        "Maracanaú": {
-            "id_ibge": 2307650,
-            "estado": "Ceará",
-            "sigla_uf": "CE",
-            "capital": False,
-            "populacao_estimada": 234509
-        },
-
-        # ---------------- BAHIA ----------------
+        # BAHIA
 
         "Salvador": {
             "id_ibge": 2927408,
@@ -82,7 +68,7 @@ municipios_nordeste_dataset = {
             "estado": "Bahia",
             "sigla_uf": "BA",
             "capital": False,
-            "populacao_estimada": 616272
+            "populacao_estimada": 657948
         },
 
         "Vitória da Conquista": {
@@ -90,7 +76,7 @@ municipios_nordeste_dataset = {
             "estado": "Bahia",
             "sigla_uf": "BA",
             "capital": False,
-            "populacao_estimada": 370879
+            "populacao_estimada": 394024
         },
 
         "Camaçari": {
@@ -98,156 +84,10 @@ municipios_nordeste_dataset = {
             "estado": "Bahia",
             "sigla_uf": "BA",
             "capital": False,
-            "populacao_estimada": 300372
+            "populacao_estimada": 319394
         },
 
-        "Ilhéus": {
-            "id_ibge": 2913606,
-            "estado": "Bahia",
-            "sigla_uf": "BA",
-            "capital": False,
-            "populacao_estimada": 178703
-        },
-
-        "Itabuna": {
-            "id_ibge": 2914802,
-            "estado": "Bahia",
-            "sigla_uf": "BA",
-            "capital": False,
-            "populacao_estimada": 186708
-        },
-
-        # ---------------- PERNAMBUCO ----------------
-
-        "Recife": {
-            "id_ibge": 2611606,
-            "estado": "Pernambuco",
-            "sigla_uf": "PE",
-            "capital": True,
-            "populacao_estimada": 1587707
-        },
-
-        "Jaboatão dos Guararapes": {
-            "id_ibge": 2607901,
-            "estado": "Pernambuco",
-            "sigla_uf": "PE",
-            "capital": False,
-            "populacao_estimada": 644037
-        },
-
-        "Olinda": {
-            "id_ibge": 2609600,
-            "estado": "Pernambuco",
-            "sigla_uf": "PE",
-            "capital": False,
-            "populacao_estimada": 349976
-        },
-
-        "Caruaru": {
-            "id_ibge": 2604106,
-            "estado": "Pernambuco",
-            "sigla_uf": "PE",
-            "capital": False,
-            "populacao_estimada": 378048
-        },
-
-        "Petrolina": {
-            "id_ibge": 2611101,
-            "estado": "Pernambuco",
-            "sigla_uf": "PE",
-            "capital": False,
-            "populacao_estimada": 386786
-        },
-
-        # ---------------- PIAUÍ ----------------
-
-        "Teresina": {
-            "id_ibge": 2211001,
-            "estado": "Piauí",
-            "sigla_uf": "PI",
-            "capital": True,
-            "populacao_estimada": 866300
-        },
-
-        "Parnaíba": {
-            "id_ibge": 2207702,
-            "estado": "Piauí",
-            "sigla_uf": "PI",
-            "capital": False,
-            "populacao_estimada": 162159
-        },
-
-        "Picos": {
-            "id_ibge": 2208007,
-            "estado": "Piauí",
-            "sigla_uf": "PI",
-            "capital": False,
-            "populacao_estimada": 83090
-        },
-
-        # ---------------- MARANHÃO ----------------
-
-        "São Luís": {
-            "id_ibge": 2111300,
-            "estado": "Maranhão",
-            "sigla_uf": "MA",
-            "capital": True,
-            "populacao_estimada": 1088055
-        },
-
-        "Imperatriz": {
-            "id_ibge": 2105302,
-            "estado": "Maranhão",
-            "sigla_uf": "MA",
-            "capital": False,
-            "populacao_estimada": 273110
-        },
-
-        "Caxias": {
-            "id_ibge": 2103000,
-            "estado": "Maranhão",
-            "sigla_uf": "MA",
-            "capital": False,
-            "populacao_estimada": 156973
-        },
-
-        # ---------------- PARAÍBA ----------------
-
-        "João Pessoa": {
-            "id_ibge": 2507507,
-            "estado": "Paraíba",
-            "sigla_uf": "PB",
-            "capital": True,
-            "populacao_estimada": 833932
-        },
-
-        "Campina Grande": {
-            "id_ibge": 2504009,
-            "estado": "Paraíba",
-            "sigla_uf": "PB",
-            "capital": False,
-            "populacao_estimada": 419379
-        },
-
-        # ---------------- RIO GRANDE DO NORTE ----------------
-
-        "Natal": {
-            "id_ibge": 2408102,
-            "estado": "Rio Grande do Norte",
-            "sigla_uf": "RN",
-            "capital": True,
-            "populacao_estimada": 751300
-        },
-
-        "Mossoró": {
-            "id_ibge": 2408003,
-            "estado": "Rio Grande do Norte",
-            "sigla_uf": "RN",
-            "capital": False,
-            "populacao_estimada": 278587
-        },
-
-        # ---------------- ALAGOAS ----------------
+        # ALAGOAS
 
         "Maceió": {
             "id_ibge": 2704302,
@@ -262,17 +102,163 @@ municipios_nordeste_dataset = {
             "estado": "Alagoas",
             "sigla_uf": "AL",
             "capital": False,
-            "populacao_estimada": 234696
+            "populacao_estimada": 243661
         },
 
-        # ---------------- SERGIPE ----------------
+        "Rio Largo": {
+            "id_ibge": 2707701,
+            "estado": "Alagoas",
+            "sigla_uf": "AL",
+            "capital": False,
+            "populacao_estimada": 97435
+        },
+
+        # MARANHÃO
+
+        "São Luís": {
+            "id_ibge": 2111300,
+            "estado": "Maranhão",
+            "sigla_uf": "MA",
+            "capital": True,
+            "populacao_estimada": 1088057
+        },
+
+        "Timon": {
+            "id_ibge": 2112209,
+            "estado": "Maranhão",
+            "sigla_uf": "MA",
+            "capital": False,
+            "populacao_estimada": 182241
+        },
+
+        "São José de Ribamar": {
+            "id_ibge": 2111200,
+            "estado": "Maranhão",
+            "sigla_uf": "MA",
+            "capital": False,
+            "populacao_estimada": 257414
+        },
+
+        # PARAÍBA
+
+        "João Pessoa": {
+            "id_ibge": 2507507,
+            "estado": "Paraíba",
+            "sigla_uf": "PB",
+            "capital": True,
+            "populacao_estimada": 888679
+        },
+
+        "Campina Grande": {
+            "id_ibge": 2504009,
+            "estado": "Paraíba",
+            "sigla_uf": "PB",
+            "capital": False,
+            "populacao_estimada": 440939
+        },
+
+        "Sousa": {
+            "id_ibge": 2516201,
+            "estado": "Paraíba",
+            "sigla_uf": "PB",
+            "capital": False,
+            "populacao_estimada": 69876
+        },
+
+        # PERNAMBUCO
+
+        "Recife": {
+            "id_ibge": 2611606,
+            "estado": "Pernambuco",
+            "sigla_uf": "PE",
+            "capital": True,
+            "populacao_estimada": 1587707
+        },
+
+        "Caruaru": {
+            "id_ibge": 2604106,
+            "estado": "Pernambuco",
+            "sigla_uf": "PE",
+            "capital": False,
+            "populacao_estimada": 402290
+        },
+
+        "Petrolina": {
+            "id_ibge": 2611101,
+            "estado": "Pernambuco",
+            "sigla_uf": "PE",
+            "capital": False,
+            "populacao_estimada": 414083
+        },
+
+        # PIAUÍ
+
+        "Teresina": {
+            "id_ibge": 2211001,
+            "estado": "Piauí",
+            "sigla_uf": "PI",
+            "capital": True,
+            "populacao_estimada": 902644
+        },
+
+        "Parnaíba": {
+            "id_ibge": 2207702,
+            "estado": "Piauí",
+            "sigla_uf": "PI",
+            "capital": False,
+            "populacao_estimada": 169552
+        },
+
+        "Picos": {
+            "id_ibge": 2208007,
+            "estado": "Piauí",
+            "sigla_uf": "PI",
+            "capital": False,
+            "populacao_estimada": 86228
+        },
+
+        "Piripiri": {
+            "id_ibge": 2208403,
+            "estado": "Piauí",
+            "sigla_uf": "PI",
+            "capital": False,
+            "populacao_estimada": 67676
+        },
+
+        # RIO GRANDE DO NORTE
+
+        "Natal": {
+            "id_ibge": 2408102,
+            "estado": "Rio Grande do Norte",
+            "sigla_uf": "RN",
+            "capital": True,
+            "populacao_estimada": 785368
+        },
+
+        "Mossoró": {
+            "id_ibge": 2408003,
+            "estado": "Rio Grande do Norte",
+            "sigla_uf": "RN",
+            "capital": False,
+            "populacao_estimada": 278034
+        },
+
+        "Parnamirim": {
+            "id_ibge": 2403251,
+            "estado": "Rio Grande do Norte",
+            "sigla_uf": "RN",
+            "capital": False,
+            "populacao_estimada": 269298
+        },
+
+        # SERGIPE
 
         "Aracaju": {
             "id_ibge": 2800308,
             "estado": "Sergipe",
             "sigla_uf": "SE",
             "capital": True,
-            "populacao_estimada": 602757
+            "populacao_estimada": 628849
         },
 
         "Itabaiana": {
@@ -280,24 +266,22 @@ municipios_nordeste_dataset = {
             "estado": "Sergipe",
             "sigla_uf": "SE",
             "capital": False,
-            "populacao_estimada": 103439
+            "populacao_estimada": 103440
+        },
+
+        "Nossa Senhora do Socorro": {
+            "id_ibge": 2804805,
+            "estado": "Sergipe",
+            "sigla_uf": "SE",
+            "capital": False,
+            "populacao_estimada": 192330
         }
     }
 }
 
 
 # =====================================================
-# FUNÇÃO PARA ATUALIZAR O TOTAL DE MUNICÍPIOS
-# =====================================================
-
-def atualizar_total_municipios():
-    total = len(municipios_nordeste_dataset["municipios"])
-
-    municipios_nordeste_dataset["metadados"]["total_municipios"] = total
-
-
-# =====================================================
-# ROTA PRINCIPAL - PÁGINA INICIAL
+# PÁGINA INICIAL
 # =====================================================
 
 @app.route("/")
@@ -306,39 +290,31 @@ def inicio():
 
 
 # =====================================================
-# GET - LISTAR TODOS OU FILTRAR POR ESTADO
-# Rota: GET /municipios
+# LISTAR / FILTRAR MUNICÍPIOS
+# GET /municipios
 # =====================================================
 
 @app.route("/municipios", methods=["GET"])
 def listar_municipios():
 
-    # Recebe o parâmetro uf da URL
+    municipios = municipios_nordeste_dataset["municipios"]
     uf = request.args.get("uf")
 
-    municipios = municipios_nordeste_dataset["municipios"]
-
-    # Se o usuário informar uma UF, realiza o filtro
     if uf:
+        filtrados = {}
 
-        resultado = {}
-
-        # Percorre o dicionário usando .items()
         for nome, dados in municipios.items():
-
-            # Compara a sigla do estado
             if dados["sigla_uf"].upper() == uf.upper():
-                resultado[nome] = dados
+                filtrados[nome] = dados
 
-        return jsonify(resultado), 200
+        return jsonify(filtrados)
 
-    # Caso não exista filtro, retorna todos
-    return jsonify(municipios), 200
+    return jsonify(municipios)
 
 
 # =====================================================
-# GET - CONSULTAR MUNICÍPIO POR NOME
-# Rota: GET /municipios/<nome>
+# CONSULTAR MUNICÍPIO
+# GET /municipios/<nome>
 # =====================================================
 
 @app.route("/municipios/<nome>", methods=["GET"])
@@ -346,76 +322,65 @@ def consultar_municipio(nome):
 
     municipios = municipios_nordeste_dataset["municipios"]
 
-    # Busca o município diretamente pela chave
     if nome in municipios:
-        return jsonify(municipios[nome]), 200
+        return jsonify(municipios[nome])
 
-    # Retorna erro 404 caso não exista
-    return jsonify({
-        "erro": "Município não encontrado."
-    }), 404
+    return jsonify({"erro": "Município não encontrado."}), 404
 
 
 # =====================================================
-# POST - CADASTRAR NOVO MUNICÍPIO
-# Rota: POST /municipios
+# CADASTRAR MUNICÍPIO
+# POST /municipios
 # =====================================================
 
 @app.route("/municipios", methods=["POST"])
 def cadastrar_municipio():
 
-    # Recebe os dados enviados em JSON
     dados = request.get_json()
 
-    # Verifica se os dados são um dicionário
-    if not isinstance(dados, dict):
-        return jsonify({
-            "erro": "Envie os dados em formato JSON."
-        }), 400
+    if not dados:
+        return jsonify({"erro": "Nenhum dado foi enviado."}), 400
 
-    # Recupera o nome do município
     nome = dados.get("nome")
 
-    # Valida o nome
     if not isinstance(nome, str) or not nome.strip():
-        return jsonify({
-            "erro": "O nome do município é obrigatório."
-        }), 400
+        return jsonify({"erro": "Nome obrigatório."}), 400
 
     nome = nome.strip()
-
     municipios = municipios_nordeste_dataset["municipios"]
 
-    # Verifica se o município já está cadastrado
     if nome in municipios:
-        return jsonify({
-            "erro": "Este município já está cadastrado."
-        }), 409
+        return jsonify({"erro": "Município já cadastrado."}), 409
 
-    # Cria um novo dicionário sem o campo nome
-    dados_municipio = {
-        chave: valor
-        for chave, valor in dados.items()
-        if chave != "nome"
-    }
+    try:
+        novo_municipio = {
+            "id_ibge": int(dados["id_ibge"]),
+            "estado": dados["estado"].strip(),
+            "sigla_uf": dados["sigla_uf"].strip().upper(),
+            "capital": dados["capital"],
+            "populacao_estimada": int(dados["populacao_estimada"])
+        }
 
-    # Adiciona o município ao dicionário
-    municipios[nome] = dados_municipio
+        if not novo_municipio["estado"] or len(novo_municipio["sigla_uf"]) != 2:
+            raise ValueError()
 
-    # Atualiza o total de municípios
-    atualizar_total_municipios()
+        if not isinstance(novo_municipio["capital"], bool):
+            raise ValueError()
+
+    except (KeyError, ValueError, TypeError, AttributeError):
+        return jsonify({"erro": "Verifique os dados informados."}), 400
+
+    municipios[nome] = novo_municipio
 
     return jsonify({
-        "mensagem": "Município cadastrado com sucesso.",
-        "municipio": {
-            nome: dados_municipio
-        }
+        "mensagem": "Município cadastrado com sucesso!",
+        "municipio": novo_municipio
     }), 201
 
 
 # =====================================================
-# PATCH - ATUALIZAR MUNICÍPIO
-# Rota: PATCH /municipios/<nome>
+# ATUALIZAR MUNICÍPIO
+# PATCH /municipios/<nome>
 # =====================================================
 
 @app.route("/municipios/<nome>", methods=["PATCH"])
@@ -423,32 +388,54 @@ def atualizar_municipio(nome):
 
     municipios = municipios_nordeste_dataset["municipios"]
 
-    # Verifica se o município existe
     if nome not in municipios:
-        return jsonify({
-            "erro": "Município não encontrado."
-        }), 404
+        return jsonify({"erro": "Município não encontrado."}), 404
 
-    # Recebe os dados para atualização
     dados = request.get_json()
 
-    if not isinstance(dados, dict):
-        return jsonify({
-            "erro": "Envie os dados em formato JSON."
-        }), 400
+    if not isinstance(dados, dict) or not dados:
+        return jsonify({"erro": "Nenhum dado foi enviado."}), 400
 
-    # Atualiza somente os campos enviados
-    municipios[nome].update(dados)
+    try:
+        municipio = municipios[nome]
+
+        if "id_ibge" in dados:
+            municipio["id_ibge"] = int(dados["id_ibge"])
+
+        if "estado" in dados:
+            municipio["estado"] = dados["estado"].strip()
+
+        if "sigla_uf" in dados:
+            uf = dados["sigla_uf"].strip().upper()
+
+            if len(uf) != 2:
+                raise ValueError()
+
+            municipio["sigla_uf"] = uf
+
+        if "capital" in dados:
+            if not isinstance(dados["capital"], bool):
+                raise ValueError()
+
+            municipio["capital"] = dados["capital"]
+
+        if "populacao_estimada" in dados:
+            municipio["populacao_estimada"] = int(
+                dados["populacao_estimada"]
+            )
+
+    except (ValueError, TypeError, AttributeError):
+        return jsonify({"erro": "Verifique os dados informados."}), 400
 
     return jsonify({
-        "mensagem": "Município atualizado com sucesso.",
-        "municipio": municipios[nome]
-    }), 200
+        "mensagem": "Município atualizado com sucesso!",
+        "municipio": municipio
+    })
 
 
 # =====================================================
-# DELETE - EXCLUIR MUNICÍPIO
-# Rota: DELETE /municipios/<nome>
+# EXCLUIR MUNICÍPIO
+# DELETE /municipios/<nome>
 # =====================================================
 
 @app.route("/municipios/<nome>", methods=["DELETE"])
@@ -456,39 +443,44 @@ def excluir_municipio(nome):
 
     municipios = municipios_nordeste_dataset["municipios"]
 
-    # Verifica se o município existe
     if nome not in municipios:
-        return jsonify({
-            "erro": "Município não encontrado."
-        }), 404
+        return jsonify({"erro": "Município não encontrado."}), 404
 
-    # Remove o município usando .pop()
-    municipio_removido = municipios.pop(nome)
+    municipios.pop(nome)
 
-    # Atualiza o total de municípios
-    atualizar_total_municipios()
-
-    return jsonify({
-        "mensagem": "Município removido com sucesso.",
-        "municipio": municipio_removido
-    }), 200
+    return jsonify({"mensagem": "Município excluído com sucesso!"})
 
 
 # =====================================================
-# GET - CONSULTAR METADADOS
-# Rota: GET /metadados
+# EXPORTAR ARQUIVO JSON
+# GET /municipios/exportar
 # =====================================================
 
-@app.route("/metadados", methods=["GET"])
-def consultar_metadados():
+@app.route("/municipios/exportar", methods=["GET"])
+def exportar_json():
 
-    return jsonify(
-        municipios_nordeste_dataset["metadados"]
-    ), 200
+    arquivo = BytesIO()
+
+    arquivo.write(
+        json.dumps(
+            municipios_nordeste_dataset,
+            ensure_ascii=False,
+            indent=4
+        ).encode("utf-8")
+    )
+
+    arquivo.seek(0)
+
+    return send_file(
+        arquivo,
+        mimetype="application/json",
+        as_attachment=True,
+        download_name="municipios_nordeste.json"
+    )
 
 
 # =====================================================
-# EXECUÇÃO DO SERVIDOR
+# EXECUTAR A APLICAÇÃO
 # =====================================================
 
 if __name__ == "__main__":
